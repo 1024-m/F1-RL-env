@@ -1,22 +1,33 @@
 {
   "dataset": "1024m/F1-RL-HF-Assets",
-  "min_bytes": 10485760,
   "files": [
     {
-      "path": "assets/cars/lambo_sc18.glb",
-      "bytes": 11656112
-    },
-    {
-      "path": "assets/cars/mustang_roush.glb",
-      "bytes": 29595096
+      "path": "assets/maps/shanghai/track.glb",
+      "bytes": 92809048
     },
     {
       "path": "assets/cars/porsche_gt2rs.glb",
       "bytes": 14592228
     },
     {
-      "path": "assets/maps/shanghai/track.glb",
-      "bytes": 92809048
+      "path": "assets/cars/corvette_zr1.glb",
+      "bytes": 9819496
+    },
+    {
+      "path": "assets/cars/ford_gt.glb",
+      "bytes": 7663384
+    },
+    {
+      "path": "assets/cars/lambo_sc18.glb",
+      "bytes": 11656112
+    },
+    {
+      "path": "assets/cars/mclaren_600lt.glb",
+      "bytes": 5918960
+    },
+    {
+      "path": "assets/cars/mustang_roush.glb",
+      "bytes": 29595096
     }
   ]
 }

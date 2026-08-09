@@ -42,10 +42,11 @@ PORT=8080
 ## Large assets (HF dataset)
 
 Public dataset: https://huggingface.co/datasets/1024m/F1-RL-HF-Assets  
-Files ≥10MB live there (same paths under `assets/`).
+
+Stores **7 files** (same local paths): Shanghai `track.glb` + all 6 car GLBs.
 
 ```bash
-# maintainers: upload large local assets
+# maintainers: upload map + 6 cars
 python3 tools/push_assets_dataset.py
 
 # anyone: download them into local assets/ paths
