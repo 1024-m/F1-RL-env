@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Barrier ID raycast (debug — new file only)</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #222; color: #eee; font: 14px/1.4 ui-monospace, monospace; }
+    #hud {
+      position: fixed; left: 12px; top: 12px; z-index: 2;
+      background: #000c; padding: 10px 12px; max-width: min(520px, 92vw);
+      border: 1px solid #666;
+    }
+    #log { margin-top: 8px; white-space: pre-wrap; max-height: 40vh; overflow: auto; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .hit { color: #7dffa3; }
+    .miss { color: #ffb0b0; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="hud">
+    <div><b>Barrier raycast debug</b> (does not change game code)</div>
+    <div>Click a barrier. Red vs orange — compare <code>material.name</code>.</div>
+    <div id="status">Loading track.glb…</div>
+    <div id="log"></div>
+  </div>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const status = document.getElementById('status');
+    const logEl = document.getElementById('log');
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x6a8499);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    scene.add(new THREE.HemisphereLight(0xddeeff, 0x3a2a1a, 0.75));
+    const sun = new THREE.DirectionalLight(0xfff1dd, 1.6);
+    sun.position.set(120, 220, 80);
+    scene.add(sun);
+
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.2, 3000);
+    // Near start / barriers from your shots
+    camera.position.set(-90, 8, 390);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(-110, -2.5, 375);
+    controls.update();
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    /** @type {THREE.Object3D[]} */
+    let clickables = [];
+
+    function matName(mesh) {
+      const m = mesh.material;
+      if (Array.isArray(m)) return (m[0]?.name || '(unnamed)').toString();
+      return (m?.name || '(unnamed)').toString();
+    }
+
+    function texName(mesh) {
+      const m = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+      const map = m?.map;
+      if (!map) return '(no map)';
+      return (map.name || map.source?.data?.src || 'embedded-map').toString();
+    }
+
+    function log(html, cls = '') {
+      const line = document.createElement('div');
+      if (cls) line.className = cls;
+      line.innerHTML = html;
+      logEl.prepend(line);
+    }
+
+    status.textContent = 'Downloading map…';
+    const gltf = await new GLTFLoader().loadAsync('./assets/maps/shanghai/track.glb');
+    const root = gltf.scene;
+    root.updateMatrixWorld(true);
+    scene.add(root);
+
+    const meshes = [];
+    root.traverse((o) => {
+      if (o.isMesh) meshes.push(o);
+    });
+    clickables = meshes;
+    status.textContent = `Ready — ${meshes.length} meshes. Orbit + click a barrier.`;
+
+    function onClick(ev) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(clickables, false);
+      if (!hits.length) {
+        log('miss — no mesh', 'miss');
+        status.textContent = 'Miss';
+        return;
+      }
+      const h = hits[0];
+      const mesh = h.object;
+      const name = matName(mesh);
+      const tex = texName(mesh);
+      const p = h.point;
+      status.innerHTML = `<span class="hit">HIT</span> material=<b>${name}</b> tex=${tex}`;
+      log(
+        `material.name = <b>${name}</b>\n` +
+          `texture = ${tex}\n` +
+          `mesh = ${mesh.name || '(unnamed mesh)'}\n` +
+          `point = (${p.x.toFixed(2)}, ${p.y.toFixed(2)}, ${p.z.toFixed(2)})\n` +
+          `distance = ${h.distance.toFixed(2)}`,
+        'hit',
+      );
+      console.info('[barrier-id]', { material: name, texture: tex, mesh: mesh.name, point: p });
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (ev) => {
+      // avoid orbit drag counting as click: only short clicks
+      const x0 = ev.clientX;
+      const y0 = ev.clientY;
+      const t0 = performance.now();
+      const up = (e) => {
+        renderer.domElement.removeEventListener('pointerup', up);
+        if (performance.now() - t0 > 250) return;
+        if (Math.hypot(e.clientX - x0, e.clientY - y0) > 6) return;
+        onClick(e);
+      };
+      renderer.domElement.addEventListener('pointerup', up);
+    });
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    function frame() {
+      requestAnimationFrame(frame);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    frame();
+  </script>
+</body>
+</html>

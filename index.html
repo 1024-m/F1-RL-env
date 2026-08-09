@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HF Racing</title>
+  <link rel="stylesheet" href="css/style.css?v=7" />
+</head>
+<body>
+  <div id="menu-root" class="menu-root menu-open">
+    <div id="menu-error" class="menu-error" hidden></div>
+    <div id="menu-user" class="menu-user">Starting…</div>
+
+    <section id="menu-start" class="menu-panel">
+      <h1 class="menu-brand">HF Racing</h1>
+      <p class="menu-sub">Sandbox · MVP</p>
+
+      <div class="car-picker" id="car-picker">
+        <label class="car-picker-label" for="car-select-btn">Car</label>
+        <button type="button" id="car-select-btn" class="car-select-btn" aria-haspopup="listbox" aria-expanded="false">
+          <img id="car-select-thumb" class="car-thumb" alt="" width="72" height="40" />
+          <span id="car-select-name" class="car-select-name">McLaren 600LT</span>
+          <span class="car-select-chevron" aria-hidden="true">▾</span>
+        </button>
+        <ul id="car-select-list" class="car-select-list" role="listbox" hidden></ul>
+      </div>
+
+      <div class="menu-actions">
+        <button type="button" id="btn-mode-sandbox" class="menu-btn">Sandbox</button>
+        <button type="button" id="btn-mode-mvp" class="menu-btn">MVP</button>
+      </div>
+    </section>
+
+    <section id="menu-lobby" class="menu-panel menu-lobby" hidden>
+      <div class="lobby-toolbar">
+        <button type="button" id="btn-lobby-back" class="menu-btn ghost">Back</button>
+        <h2 id="lobby-title">Lobbies</h2>
+        <div class="lobby-actions">
+          <button type="button" id="btn-lobby-leave" class="menu-btn ghost">Leave seat</button>
+          <button type="button" id="btn-lobby-enter" class="menu-btn">Enter / wait race</button>
+        </div>
+      </div>
+      <p id="lobby-meta" class="lobby-meta"></p>
+      <div id="lobby-list" class="lobby-list"></div>
+    </section>
+  </div>
+
+  <div id="hud" hidden>
+    <div id="player-hud" hidden>
+      <img id="player-avatar" alt="" width="40" height="40" />
+      <span id="player-name"></span>
+    </div>
+    <div id="speed-hud" aria-label="speed">
+      <span id="speed-value">0</span><span class="speed-unit">km/h</span>
+    </div>
+    <div id="lap-hud" aria-label="lap">
+      Lap <span id="lap-value">1</span>
+    </div>
+    <div id="spectate-bar" hidden>
+      <button type="button" id="spec-prev" class="spec-arrow" aria-label="Previous racer">◀</button>
+      <img id="spec-avatar" alt="" width="44" height="44" />
+      <span id="spec-name"></span>
+      <button type="button" id="spec-next" class="spec-arrow" aria-label="Next racer">▶</button>
+    </div>
+  </div>
+
+  <footer id="controls-footer">
+    <span id="footer-text">HF Space: https://1024m-hf-racing.hf.space</span>
+  </footer>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+      "three-mesh-bvh": "./js/vendor/three-mesh-bvh.module.js"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js?v=46"></script>
+</body>
+</html>

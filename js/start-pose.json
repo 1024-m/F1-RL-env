@@ -1,0 +1,16 @@
+{
+  "note": "ON start/finish line — face along asphalt (~-80°), not pure -X. See start_verify.png",
+  "world": {
+    "pole": {
+      "x": -108.96,
+      "y": -3.16,
+      "z": 378.91,
+      "yaw": -1.3920883164888065
+    },
+    "forward": [
+      -0.9840741759533279,
+      0,
+      0.17775830844654986
+    ]
+  }
+}
