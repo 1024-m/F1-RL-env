@@ -14,6 +14,9 @@ Local racing client + Hugging Face Space game server (lobbies / match relay).
 ## Start
 
 ```bash
+# after clone: pull large GLBs from HF (≥10MB files are not in git)
+python3 tools/fetch_assets.py
+
 python3 start.py
 ```
 
@@ -35,6 +38,19 @@ PORT=8080
 
 - **Sandbox** — solo test drive. Starts immediately on seat claim. Default car: Porsche GT2 RS.
 - **MVP** — up to 8 players. Starts after **30s** with the **same ≥2 players** seated. Join/leave resets the timer. Cars assigned randomly.
+
+## Large assets (HF dataset)
+
+Public dataset: https://huggingface.co/datasets/1024m/F1-RL-HF-Assets  
+Files ≥10MB live there (same paths under `assets/`).
+
+```bash
+# maintainers: upload large local assets
+python3 tools/push_assets_dataset.py
+
+# anyone: download them into local assets/ paths
+python3 tools/fetch_assets.py
+```
 
 ## Push Space
 

@@ -1,2 +1,9 @@
 .venv/
 .env.local
+
+# Large assets — restored by: python3 tools/fetch_assets.py
+assets/cars/lambo_sc18.glb
+assets/cars/mustang_roush.glb
+assets/cars/porsche_gt2rs.glb
+assets/maps/shanghai/track.glb
+assets/maps/track.glb
